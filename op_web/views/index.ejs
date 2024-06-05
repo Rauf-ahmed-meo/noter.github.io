@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+    }
+
+    body {
+        background-color: gray;
+    }
+
+    #name {
+        display: block;
+        width: 50vw;
+        height: 14vh;
+        font-size: xx-large;
+        margin: auto;
+        text-align: center;
+    }
+
+    .submit {
+        display: block;
+        width: 80px;
+        margin: auto;
+    }
+
+    ul {
+        display: block;
+        width: 34vw;
+        margin: auto;
+        border: 2px solid black;
+        height: 70vh;
+    }
+
+    .container {
+        display: flex;
+    }
+
+    .block1 {
+        position: absolute;
+        width: 10vw;
+        height: 70vh;
+        background-color: rgb(32, 41, 41);
+    }
+
+    .block2 {
+        position: absolute;
+        width: 10vw;
+        height: 70vh;
+        right: 0%;
+        background-color: rgb(32, 41, 41);
+    }
+</style>
+
+<body>
+    <form id="namesend">
+        <input type="text" id="name" name="name" placeholder="note">
+        <button type="submit" class="submit">submit</button>
+    </form>
+    <div class="container">
+        <div class="block1 block"></div>
+        <ul>
+            <% names.forEach(name=> { %>
+                <li>
+                    <%= name.name %>
+                        <button class="delete-btn" data-id="<%= name._id %>">failed</button>
+                        <button class="complete-btn" data-id="<%= name._id %>">completed</button>
+                </li>
+                <% }) %>
+        </ul>
+        <div class="block2 block"></div>
+    </div>
+    <script>
+        document.getElementById("namesend").addEventListener("submit", async () => {
+            event.preventDefault()
+            let inputname = document.getElementById("name").value;
+            let response = await fetch("/namestore", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: inputname })
+            })
+            location.reload()
+        })
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                document.querySelectorAll(".block").forEach(block => {
+                    block.style.backgroundColor = "red";
+                });
+                const id = btn.getAttribute('data-id')
+                await fetch(`/names/${id}`, { method: "DELETE" })
+                location.reload()
+            })
+        });
+        document.querySelectorAll(".complete-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                document.querySelectorAll(".block").forEach(block => {
+                    block.style.backgroundColor = "green";
+                });
+                const id = btn.getAttribute('data-id');
+                await fetch(`/names/${id}`, { method: "DELETE" });
+                location.reload();
+            });
+        });
+    </script>
+</body>
+
+</html>
